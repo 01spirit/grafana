@@ -92,12 +92,10 @@ func Query(ctx context.Context, tracer trace.Tracer, dsInfo *models.DatasourceIn
 			if err != nil {
 				return &backend.QueryDataResponse{}, err
 			}
-
 			rawQuery, err := query.Build(req)
 			if err != nil {
 				return &backend.QueryDataResponse{}, err
 			}
-
 			query.RefID = reqQuery.RefID
 			query.RawQuery = rawQuery
 

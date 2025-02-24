@@ -107,7 +107,8 @@ func (s *Service) QueryData(ctx context.Context, req *backend.QueryDataRequest) 
 	case influxVersionFlux:
 		return flux.Query(ctx, dsInfo, *req)
 	case influxVersionInfluxQL:
-		return influxql.Query(ctx, tracer, dsInfo, req, s.features)
+		//return influxql.Query(ctx, tracer, dsInfo, req, s.features)
+		return influxql.QueryCLI(ctx, tracer, dsInfo, req, s.features)
 	case influxVersionSQL:
 		return fsql.Query(ctx, dsInfo, *req)
 	default:

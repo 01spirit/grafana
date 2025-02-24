@@ -479,6 +479,11 @@ require github.com/grafana/loki/v3 v3.2.1 // @grafana/observability-logs
 require github.com/openzipkin/zipkin-go v0.4.3 // @grafana/oss-big-tent
 
 require (
+	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
+	github.com/influxdata/influxql v1.4.0
+)
+
+require (
 	cloud.google.com/go/longrunning v0.6.0 // indirect
 	github.com/at-wat/mqtt-go v0.19.4 // indirect
 	github.com/blevesearch/bleve_index_api v1.1.12 // indirect
