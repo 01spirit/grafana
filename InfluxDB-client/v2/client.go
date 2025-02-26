@@ -1040,12 +1040,16 @@ func STsCacheClientSeg(conn Client, queryString string, semanticSegment string) 
 }
 
 var DbConn Client
+var TotalLatency int64
+var TotalCount int64
 
 func init() {
 	DbConn, err = NewHTTPClient(HTTPConfig{
 		Addr: "http://192.168.1.101:8086",
 	})
 	STsConnArr = InitStsConnsArr([]string{"192.168.1.102:11211"})
+	TagKV = GetTagKV(DbConn, "devops_small")
+	Fields = GetFieldKeys(DbConn, "devops_small")
 }
 
 func STsCacheClientSegGrafana(dbName string, queryString string, semanticSegment string) (*Response, uint64, uint8) {

@@ -4,16 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/grafana/dskit/concurrency"
+	"github.com/grafana/grafana-plugin-sdk-go/backend"
+	influxdb_client "github.com/grafana/grafana/InfluxDB-client/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"net/http"
 	"net/url"
 	"path"
 	"strings"
 	"sync"
-
-	"github.com/grafana/dskit/concurrency"
-	"github.com/grafana/grafana-plugin-sdk-go/backend"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
+	"sync/atomic"
+	"time"
 
 	"github.com/grafana/grafana/pkg/infra/log"
 	"github.com/grafana/grafana/pkg/services/featuremgmt"
@@ -37,6 +39,8 @@ func Query(ctx context.Context, tracer trace.Tracer, dsInfo *models.DatasourceIn
 	logger := glog.FromContext(ctx)
 	response := backend.NewQueryDataResponse()
 	var err error
+
+	now := time.Now()
 
 	// We are testing running of queries in parallel behind feature flag
 	if features.IsEnabled(ctx, featuremgmt.FlagInfluxdbRunQueriesInParallel) {
@@ -116,6 +120,16 @@ func Query(ctx context.Context, tracer trace.Tracer, dsInfo *models.DatasourceIn
 				response.Responses[query.RefID] = resp
 			}
 		}
+	}
+
+	atomic.AddInt64(&influxdb_client.TotalCount, 1)
+	atomic.AddInt64(&influxdb_client.TotalLatency, time.Since(now).Microseconds())
+
+	if atomic.LoadInt64(&influxdb_client.TotalCount)%10 == 0 {
+		tcnt := atomic.LoadInt64(&influxdb_client.TotalCount)
+		tltc := atomic.LoadInt64(&influxdb_client.TotalLatency)
+		fmt.Printf("Total Query Num : %d, \t avg latency : %d \n",
+			tcnt, tltc/tcnt)
 	}
 
 	return response, err

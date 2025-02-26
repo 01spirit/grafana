@@ -17,6 +17,9 @@ func ResponseParseCLI(resp *influxdb_client.Response, query *models.Query) *back
 }
 
 func parseCLI(response *influxdb_client.Response, query *models.Query) *backend.DataResponse {
+	if response == nil || response.Error() != nil || len(response.Results) == 0 {
+		return &backend.DataResponse{Error: errors.New("result.Err")}
+	}
 	result := response.Results[0]
 	if result.Err != "" {
 		return &backend.DataResponse{Error: errors.New(result.Err)}

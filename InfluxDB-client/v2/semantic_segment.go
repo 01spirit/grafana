@@ -277,10 +277,11 @@ func GetMetricName(queryString string) string {
 
 	trimStr := strings.TrimSpace(parseExpr)
 	trimStr = strings.ReplaceAll(trimStr, "\"", "")
-	splitIndex := strings.LastIndex(trimStr, ".") + 1
-	metric := trimStr[splitIndex:]
+	//splitIndex := strings.LastIndex(trimStr, ".") + 1
+	//metric := trimStr[splitIndex:]
 
-	return metric
+	//return metric
+	return trimStr
 }
 
 var combinations []string
